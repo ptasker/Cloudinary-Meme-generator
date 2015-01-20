@@ -3,12 +3,12 @@ var cloudinary = require('cloudinary');
 var bodyParser = require('body-parser');
 
 var bunyan = require('bunyan');
- var log = bunyan.createLogger({ name: 'myserver',
-  	serializers: {
-  	req: bunyan.stdSerializers.req,
-  	res: bunyan.stdSerializers.res 
-  	}
-  });
+var log = bunyan.createLogger({ name: 'myserver',
+	serializers: {
+		req: bunyan.stdSerializers.req,
+		res: bunyan.stdSerializers.res 
+	}
+});
 
 var fortune = require('./lib/fortune.js');
 
@@ -23,16 +23,16 @@ app.use(bodyParser.json())
 
 //Config for cloudinary
 //http://cloudinary.com/documentation/node_image_manipulation#text_layers
-cloudinary.config({ 
-  cloud_name: 'dro6he6lr', 
-  api_key: '848221614325287', 
-  api_secret: 'bx0PpkGT5lo3e74CuWIhMn29i_s' 
+cloudinary.config({
+	cloud_name: 'dro6he6lr',
+	api_key: '848221614325287',
+	api_secret: 'bx0PpkGT5lo3e74CuWIhMn29i_s'
 });
 
 
 //Include handlebars
 var handlebars = require('express3-handlebars')
-				.create({defaultLayout : 'main'});
+.create({defaultLayout : 'main'});
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
@@ -47,7 +47,7 @@ app.use(
 	
 	express.static( __dirname + '/public' )
 
-);
+	);
 
 
 app.get('/', function(req, res){
@@ -64,23 +64,52 @@ app.post('/pic', function(req, res){
 
 	console.log(req.body);
 
-		try{
-			cloudinary.uploader.upload( __dirname + "/test/bat.jpg", function(result) { 
-			  	
-			  	console.log(result);
+	try{
 
-			  	var pid = result.public_id;
-			  	var image = cloudinary.image(pid + ".jpg", { alt: "Sample Image" })
-				res.render('form', { image : image });
+		cloudinary.uploader.text("Sample Name", function(result) { 
 
-			});
+			console.log(result);
 
-		}catch(ex){
-			console.log(ex);
-			console.log("Error uploading to cloudinary.");
-		}
+			try{
 
-		
+				cloudinary.uploader.upload( __dirname + "/test/bat.jpg", function(result) { 
+
+					console.log(result);
+
+					var pid = result.public_id;
+					var image = cloudinary.image(pid + ".jpg");
+
+					res.render('form', { image : image });
+				},
+				{
+					transformation: [
+					{ overlay: "text:bold_dark:" + req.body.first_line, 
+					gravity: 'north', y: 5, flags: 'relative' },
+
+					{ overlay: "text:bold_dark:" + req.body.second_line, 
+					gravity: 'south_east', flags: 'relative' }
+					]
+				}
+				);
+
+			}catch(ex){
+				console.log(ex);
+				console.log("Error uploading to cloudinary.");
+			}
+
+		},
+		{
+			public_id: "bold_dark",
+			font_family: "Lobster Two", font_size: 16,
+			font_color: "black", opacity: 100
+		});
+
+	}catch(ex){
+
+		console.log(ex);
+		console.log("Error uploading to cloudinary.");
+	}
+
 });
 
 app.get('/pic', function(req, res){
