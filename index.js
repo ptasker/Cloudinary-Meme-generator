@@ -1,6 +1,8 @@
 var express = require("express");
 var cloudinary = require('cloudinary');
 var bodyParser = require('body-parser');
+var config = require('config');
+
 
 var bunyan = require('bunyan');
 var log = bunyan.createLogger({ name: 'myserver',
@@ -23,20 +25,19 @@ app.use(bodyParser.json())
 
 //Config for cloudinary
 //http://cloudinary.com/documentation/node_image_manipulation#text_layers
+//http://cloudinary.com/documentation/upload_images#text_layers
 cloudinary.config({
-	cloud_name: 'dro6he6lr',
-	api_key: '848221614325287',
-	api_secret: 'bx0PpkGT5lo3e74CuWIhMn29i_s'
+	cloud_name: config.get('cloudinary.cloud_name'),
+	api_key: config.get('cloudinary.api_key'),
+	api_secret: config.get('cloudinary.api_secret')
 });
-
 
 //Include handlebars
 var handlebars = require('express3-handlebars')
-.create({defaultLayout : 'main'});
+				.create({defaultLayout : 'main'});
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
-
 
 
 app.set('port', process.env.PORT || 3000);
@@ -46,9 +47,7 @@ app.set('port', process.env.PORT || 3000);
 app.use( 
 	
 	express.static( __dirname + '/public' )
-
-	);
-
+);
 
 app.get('/', function(req, res){
 	res.render('home');
@@ -63,6 +62,11 @@ app.get('/about', function(req, res){
 app.post('/pic', function(req, res){
 
 	console.log(req.body);
+
+	if( req.body.first_line == "" || req.body.second_line == "" ){
+
+		return;
+	}
 
 	try{
 
@@ -96,7 +100,6 @@ app.post('/pic', function(req, res){
 				console.log(ex);
 				console.log("Error uploading to cloudinary.");
 			}
-
 		},
 		{
 			public_id: "bold_dark",
@@ -107,7 +110,7 @@ app.post('/pic', function(req, res){
 	}catch(ex){
 
 		console.log(ex);
-		console.log("Error uploading to cloudinary.");
+		console.log("Error creating font on cloudinary.");
 	}
 
 });
@@ -120,9 +123,8 @@ app.get('/pic', function(req, res){
 
 app.get('/thankyou', function(req, res){
 
-
-
 });
+
 
 app.use(function(req, res){
 
@@ -141,6 +143,5 @@ app.use(function(err, req, res, next){
 });
 
 app.listen(app.get('port'), function(){
-
 	console.log('Express APP started on http://localhost:' + app.get('port'));
 });
