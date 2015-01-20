@@ -1,7 +1,7 @@
 {
   "cloudinary": {
-  	"cloud_name" : "urcloudname",
-    "api_key" : "urapikey",
-    "api_secret" :  "ursecret"
+	"cloud_name" : "urcloudname",
+	"api_key" : "urapikey",
+	"api_secret" :  "ursecret"
   }
 }
