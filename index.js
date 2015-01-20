@@ -45,7 +45,6 @@ app.set('port', process.env.PORT || 3000);
 
 //Static folder
 app.use( 
-	
 	express.static( __dirname + '/public' )
 );
 
@@ -53,13 +52,8 @@ app.get('/', function(req, res){
 	res.render('home');
 });
 
-app.get('/about', function(req, res){
-	res.render('about', { fortune: fortune.getFortune() } );
-});
-
-
 //Form handling
-app.post('/pic', function(req, res){
+app.post('/', function(req, res){
 
 	console.log(req.body);
 
@@ -76,14 +70,14 @@ app.post('/pic', function(req, res){
 
 			try{
 
-				cloudinary.uploader.upload( __dirname + "/test/bat.jpg", function(result) { 
+				cloudinary.uploader.upload( __dirname + "/memes/bat.jpg", function(result) { 
 
 					console.log(result);
 
 					var pid = result.public_id;
 					var image = cloudinary.image(pid + ".jpg");
 
-					res.render('form', { image : image });
+					res.render('home', { image : image });
 				},
 				{
 					transformation: [
@@ -115,11 +109,14 @@ app.post('/pic', function(req, res){
 
 });
 
+
+app.get('/about', function(req, res){
+	res.render('about', { fortune: fortune.getFortune() } );
+});
+
 app.get('/pic', function(req, res){
 	res.render('form', {});
 });
-
-
 
 app.get('/thankyou', function(req, res){
 
