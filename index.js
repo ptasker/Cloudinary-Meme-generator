@@ -23,6 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+
 //Config for cloudinary
 //http://cloudinary.com/documentation/node_image_manipulation#text_layers
 //http://cloudinary.com/documentation/upload_images#text_layers
